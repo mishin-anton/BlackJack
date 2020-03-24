@@ -9,9 +9,9 @@ include Results
 
 @dealer_moved = 0
 
-menu = Menu.new
-menu.show_header
-menu.show_prompt
+@menu = Menu.new
+@menu.show_header
+@menu.show_prompt
 @username = gets.chomp
 
 @user = User.new(@username)
@@ -19,10 +19,8 @@ menu.show_prompt
 @game_field = GameField.new(@user, @dealer)
 
 def dealer_move
-  # - Пропустить ход (если очков у дилера 17 или более). Ход переходит игроку.
-  # - Добавить карту (если очков менее 17).
-  # У дилера появляется новая карта (для пользователя закрыта).
-  # После этого ход переходит игроку. Может быть добавлена только одна карта.
+  return if @user.card_stack.size >= 3 && @dealer.card_stack.size >= 3
+
   dealer_score = @dealer.score
   if dealer_score >= 17
     puts 'Dealer skipped'
@@ -36,7 +34,7 @@ def dealer_move
 end
 
 def choose_action
-  puts 'Пропустить - 1, Добавить карту - 2, Открыть карты - 3'
+  @menu.show_action_menu(@user)
   action = gets.chomp.to_i
   if action == 1 # skip
     dealer_move if @dealer_moved == 0
@@ -50,8 +48,11 @@ def choose_action
 end
 
 attempt = 1
+round = 0
 while attempt != 0
   system ('reset')
+  puts "Round ##{round = round + 1}"
+
   @dealer_moved = 0
 
   @user.init_stack

@@ -23,6 +23,7 @@ class Dealer
     @card = {}
     deck_hash.sort { rand <=> rand }.each do |key, value|
       @card[key] = value
+      deck_hash.delete(key)
 
       break if @card.size == 1
     end
