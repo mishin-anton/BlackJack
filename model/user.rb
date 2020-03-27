@@ -1,15 +1,15 @@
 require_relative 'deck'
-require_relative '../module/utils'
+require_relative '../module/round'
 
 class User
-  attr_accessor :name, :bank, :card_stack
+  attr_accessor :name, :bank, :cards_stack
   attr_reader :sum
 
-  include Utils
+  include Round
 
   def initialize (name)
     @name = name
-    @bank = 100
-    @card_stack = {}
+    @bank = 0
+    @cards_stack = {}
   end
 end

@@ -1,16 +1,16 @@
 require_relative '../model/deck'
 
-module Utils
+module Round
 
-  def init_stack
-    @card_stack = {}
+  def generate_cards
+    @cards_stack = {}
     add_card_to_stack
     add_card_to_stack
   end
 
   def add_card_to_stack
     @cards ||= Deck.new.deck
-    one_card_get(@cards).each { |key, value| @card_stack[key] = value }
+    one_card_get(@cards).each { |key, value| @cards_stack[key] = value }
   end
 
   def one_card_get(deck_hash)
@@ -27,7 +27,7 @@ module Utils
 
   def score
     @sum = 0
-    @card_stack.each_value { |value| @sum = @sum + value }
+    @cards_stack.each_value { |value| @sum = @sum + value }
 
     @sum
   end
