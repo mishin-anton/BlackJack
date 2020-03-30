@@ -1,35 +1,29 @@
 require_relative 'model/user'
 
 class Interface
-
-  def initialize(user, dealer)
-    @user = user
-    @dealer = dealer
-  end
-
   def username_set
     puts 'Enter player name'
     gets.chomp
   end
 
-  def new_round
+  def new_round (user, dealer)
     puts "----------------------------"
-    puts " Player name: #{@user.name}"
+    puts " Player name: #{user.name}"
     puts " BANK:"
-    puts " #{@user.name}: #{@user.bank}$  Dealer: #{@dealer.bank}$"
+    puts " #{user.name}: #{user.bank}$  Dealer: #{dealer.bank}$"
     puts "----------------------------"
   end
 
-  def start_game
+  def start_game(user)
     puts "**start game***"
-    puts " #{@user.name} cards: #{@user.cards_stack.keys} SUM: #{@user.score}"
+    puts " #{user.name} cards: #{user.cards_stack.keys} SUM: #{user.score}"
     puts " Dealer cards * *"
   end
 
-  def update
-    puts " #{@user.name} cards: #{@user.cards_stack.keys} SUM: #{@user.score}"
+  def update (user, dealer)
+    puts " #{user.name} cards: #{user.cards_stack.keys} SUM: #{user.score}"
 
-    dealer_cards_quantyty = @dealer.cards_stack.size
+    dealer_cards_quantyty = dealer.cards_stack.size
     print " Dealer cards: "
     while dealer_cards_quantyty != 0
       print '* '
@@ -38,18 +32,22 @@ class Interface
     puts ''
   end
 
+  def show_round_info(round)
+    puts "Round #{round}"
+  end
+
   def show_bet
     puts ' BET 10$'
   end
 
-  def show_cards
-    puts "#{@user.name} cards: #{@user.cards_stack.keys} SUM: #{@user.score}"
-    puts "Dealer cards: #{@dealer.cards_stack.keys} SUM: #{@dealer.score}"
+  def show_cards(user, dealer)
+    puts "#{user.name} cards: #{user.cards_stack.keys} SUM: #{user.score}"
+    puts "Dealer cards: #{dealer.cards_stack.keys} SUM: #{dealer.score}"
   end
 
-  def show_bank
-    puts "#{@user.name} bank: #{@user.bank}"
-    puts "Dealer bank: #{@dealer.bank}"
+  def show_bank(user, dealer)
+    puts "#{user.name} bank: #{user.bank}"
+    puts "Dealer bank: #{dealer.bank}"
   end
 
   def show_action_menu(user)
@@ -60,9 +58,17 @@ class Interface
     end
   end
 
-  def show_results
+  def dialog_another_try?
+    puts "Another try? (1-Yes, 0-No)"
+  end
+
+  def message(msg)
+    puts msg
+  end
+
+  def show_results(user, dealer)
     puts 'RESULTS:'
-    show_cards
-    show_bank
+    show_cards(user, dealer)
+    show_bank(user, dealer)
   end
 end

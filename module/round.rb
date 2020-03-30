@@ -1,7 +1,6 @@
 require_relative '../model/deck'
 
 module Round
-
   def generate_cards
     @cards_stack = {}
     add_card_to_stack

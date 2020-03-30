@@ -1,11 +1,8 @@
 require_relative 'interface'
 require_relative 'model/user'
 require_relative 'model/dealer'
-require_relative 'module/results.rb'
 
 class Game
-  include Results
-
   START_USER_BALANCE = 100
   START_DEALER_BALANCE = 100
   BET = 10
@@ -13,10 +10,9 @@ class Game
   attr_reader :user, :dealer, :dealer_moved
 
   def initialize
-    @username = username_set
-    @user = User.new(@username)
-    @dealer = Dealer.new()
-    @interface = Interface.new(@user, @dealer)
+    @interface = Interface.new
+    @user = User.new(@interface.username_set)
+    @dealer = Dealer.new
     @user.bank = START_USER_BALANCE
     @dealer.bank = START_DEALER_BALANCE
     @dealer_moved = 0
@@ -28,13 +24,13 @@ class Game
 
     while attempt != 0
       system ('reset')
-      puts "Round #{round = round + 1}"
+      @interface.show_round_info(round = round + 1)
 
       @user.generate_cards
       @dealer.generate_cards
 
-      @interface.new_round
-      @interface.start_game
+      @interface.new_round(@user, @dealer)
+      @interface.start_game(@user)
 
       @user.bet(BET)
       @dealer.bet(BET)
@@ -42,16 +38,11 @@ class Game
       choose_action
 
       calculate_results(@user, @dealer)
-      @interface.show_results
+      @interface.show_results(@user, @dealer)
 
-      puts "Another try? (1-Yes, 0-No)"
+      @interface.dialog_another_try?
       attempt = gets.chomp.to_i
     end
-  end
-
-  def username_set
-    puts 'Enter player name'
-    gets.chomp
   end
 
   def dealer_move
@@ -59,12 +50,12 @@ class Game
 
     dealer_score = @dealer.score
     if dealer_score >= 17
-      puts 'Dealer skipped'
+      @interface.message('Dealer skipped')
       @dealer_moved = @dealer_moved + 1
       choose_action
     elsif dealer_score < 17
       @dealer.add_card_to_stack
-      @interface.update
+      @interface.update(@user, @dealer)
       choose_action
     end
   end
@@ -77,9 +68,44 @@ class Game
       return
     elsif action == 2 # add card
       @user.add_card_to_stack
-      @interface.update
+      @interface.update(@user, @dealer)
       choose_action
     elsif action == 3 # open cards
+    end
+  end
+
+  def calculate_results(user, dealer)
+    @user_score = user.score
+    @dealer_score = dealer.score
+
+    if @user_score > 21 && @dealer_score > 21
+      @interface.message('TRY ATTEMPT')
+      user.plus_money(10)
+      dealer.plus_money(10)
+
+    elsif @user_score > 21 && @dealer_score <= 21
+      @interface.message('GAME OVER')
+      dealer.plus_money(20)
+
+    elsif @dealer_score > 21 && @user_score <= 21
+      @interface.message('YOU WIN')
+      user.plus_money(20)
+
+    elsif @user_score == @dealer_score
+      @interface.message('DRAW')
+      user.plus_money(10)
+      dealer.plus_money(10)
+
+    else
+      if (21 - @dealer_score) < (21 - @user_score)
+        @interface.message('GAME OVER')
+        dealer.plus_money(20)
+      end
+
+      if (21 - @user_score) < (21 - @dealer_score)
+        @interface.message('YOU WIN')
+        user.plus_money(20)
+      end
     end
   end
 end
